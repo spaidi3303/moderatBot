@@ -5,7 +5,7 @@ from aiogram.types import Message, ChatPermissions
 import Constant
 from datetime import datetime, timedelta
 
-from Commands.GiveUsername import give_username
+from Commands.GiveUsername import give_username, user_name
 from Commands.Give_Role import promote_admin
 from Database import Connect
 
@@ -84,11 +84,16 @@ async def Mut(ms: Message):
         logging.error(f"Ошибка: {e}")
         await ms.reply(f"Произошла ошибка Mut: {e}")
         
-@router.message(F.text.lower() == "анмут",
-                F.from_user.id.in_(Constant.DEAN.admins.value),
-                F.reply_to_message.from_user,)
+@router.message(F.text.lower().startswith("анмут"),
+                F.from_user.id.in_(Constant.DEAN.admins.value),)
 async def UnMut(ms: Message):
     try:
+        if ms.reply_to_message:
+            username = await give_username(ms)
+            userid = ms.reply_to_message.from_user.id
+        else:
+            username = ms.text.split()[-1]
+            userid = await user_name(ms, username)
 
         await ms.chat.restrict(
             user_id=ms.reply_to_message.from_user.id,
@@ -103,8 +108,7 @@ async def UnMut(ms: Message):
                 can_pin_messages=False
             )
         )
-        username = await give_username(ms)
-        userid = ms.reply_to_message.from_user.id
+
         db = Connect(userid)
         user = db.IfUser()
         del db

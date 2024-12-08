@@ -2,18 +2,22 @@ import logging
 from aiogram import Router, F
 from aiogram.types import Message
 import Constant
-from Commands.GiveUsername import give_username
+from Commands.GiveUsername import give_username, user_name
 from Database import Connect
 
 router = Router()
 
-@router.message(F.text.lower() == "дать пред",
-                F.from_user.id.in_(Constant.DEAN.admins.value),
-                F.reply_to_message)
+@router.message(F.text.lower().startswith("дать пред"),
+                F.from_user.id.in_(Constant.DEAN.admins.value),)
 async def give_pred(ms: Message):
     try:
-        userid = ms.reply_to_message.from_user.id
-        username = await give_username(ms)
+        if ms.reply_to_message:
+            username = await give_username(ms)
+            userid = ms.reply_to_message.from_user.id
+        else:
+            username = ms.text.split()[-1]
+            userid = await user_name(ms, username)
+
         db = Connect(userid)
         user = db.IfUser()
         del db
@@ -38,13 +42,16 @@ async def give_pred(ms: Message):
         logging.error(f"Ошибка: {e}")
         await ms.reply(f"Произошла ошибка give_pred: {e}")
 
-@router.message(F.text.lower() == "снять пред",
-                F.from_user.id.in_(Constant.DEAN.admins.value),
-                F.reply_to_message)
+@router.message(F.text.lower().startswith("снять пред"),
+                F.from_user.id.in_(Constant.DEAN.admins.value),)
 async def DelOnePred(ms: Message):
     try:
-        userid = ms.reply_to_message.from_user.id
-        username = await give_username(ms)
+        if ms.reply_to_message:
+            username = await give_username(ms)
+            userid = ms.reply_to_message.from_user.id
+        else:
+            username = ms.text.split()[-1]
+            userid = await user_name(ms, username)
         db = Connect(userid)
         user = db.IfUser()
         del db
@@ -67,12 +74,16 @@ async def DelOnePred(ms: Message):
         logging.error(f"Ошибка: {e}")
         await ms.reply(f"Произошла ошибка DelOnePred: {e}")
 
-@router.message(F.text.lower() == "посмотреть преды",
-                F.from_user.id.in_(Constant.DEAN.admins.value),
-                F.reply_to_message)
+@router.message(F.text.lower().startswith("посмотреть преды"),
+                F.from_user.id.in_(Constant.DEAN.admins.value),)
 async def ReadPredsUser(ms: Message):
     try:
-        userid = ms.reply_to_message.from_user.id
+        if ms.reply_to_message:
+            username = await give_username(ms)
+            userid = ms.reply_to_message.from_user.id
+        else:
+            username = ms.text.split()[-1]
+            userid = await user_name(ms, username)
         db = Connect(userid)
         user = db.IfUser()
         del db
