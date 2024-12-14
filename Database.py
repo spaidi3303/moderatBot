@@ -1,4 +1,3 @@
-
 import pymysql
 from pymysql.cursors import DictCursor
 

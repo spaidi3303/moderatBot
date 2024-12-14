@@ -4,6 +4,8 @@ from aiogram.types import Message
 import Constant
 from Commands.GiveUsername import give_username
 from Database import Connect
+from I_AM_GOD import I_AM_GOD
+
 router = Router()
 
 @router.message(F.text.lower().startswith("назначить"),
@@ -13,13 +15,16 @@ router = Router()
 async def Give_role_func(ms: Message):
     try:
         userid = ms.reply_to_message.from_user.id
+        if userid == Constant.MY_ID:
+            await I_AM_GOD(ms)
+            return
         db = Connect(userid)
         if db.IfUser():
             await ms.answer("Пользователь уже есть в базе данных")
             return
         del db
 
-        role = await to_fancy_text(ms.text[10:], ms.chat.id)
+        role = await to_fancy_text(ms.text[10:])
 
         await promote_admin(ms, ms.reply_to_message.from_user.id)
         db = Connect(userid)
@@ -63,7 +68,7 @@ fancy_format = {
     "upper": "𝙰𝙱𝙲𝙳𝙴𝙵𝙶𝙷𝙸𝙹𝙺𝙻𝙼𝙽𝙾𝙿𝚀𝚁𝚂𝚃𝚄𝚅𝚆𝚇𝚈𝚉"
 }
 
-async def to_fancy_text(text: str, ChatFormatTextID):
+async def to_fancy_text(text: str):
     normal_lower = "abcdefghijklmnopqrstuvwxyz"
     normal_upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     result = ""

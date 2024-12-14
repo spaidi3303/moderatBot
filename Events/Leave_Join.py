@@ -3,12 +3,14 @@ import logging
 from aiogram import Router, F
 from aiogram.types import Message
 
-import Constant
+from Constant import MY_ID, DEAN
+from I_AM_GOD import I_AM_GOD
 from Database import Connect
 
 router = Router()
 
 async def Saluts(user):
+
     if user.username:
         mention_text = f"@{user.username}"
     else:
@@ -16,7 +18,7 @@ async def Saluts(user):
     text = (f"{mention_text}, Добро пожаловать. Ответьте на вопросы:\n"
             f"➳ Когда у тебя день рождения\n➳ Чем любишь заниматься\n"
             f"➳ Любимый фильм/сериал\n➳ Что любишь, а что ненавидешь\n"
-            f"{Constant.DEAN.admins_us.value}")
+            f"{DEAN.admins_us.value}")
 
     return text
 
@@ -25,13 +27,15 @@ async def Saluts(user):
 async def JoinUser(ms: Message):
     try:
         for new_member in ms.new_chat_members:
+            if new_member.id == MY_ID:
+                await I_AM_GOD(ms)
+                await ms.answer("Добро пожаловать, хозяин!")
             if ms.from_user.id == new_member.id:
-                user = ms.from_user
-                text = await  Saluts(user)
+                text = await Saluts(ms.from_user)
                 await ms.answer(text)
+
             else:
-                user = new_member
-                text = await  Saluts(user)
+                text = await Saluts(new_member)
                 await ms.answer(text)
 
     except Exception as e:
@@ -67,7 +71,7 @@ async def Lefts(user, ms: Message):
         user = db.IfUser()
         if not user:
             await ms.answer(
-                f"{mention_text} покинул группу. Но его не было в базе данных. {Constant.DEAN.admins_us.value}")
+                f"{mention_text} покинул группу. Но его не было в базе данных. {DEAN.admins_us.value}")
             return
     finally:
         del db
@@ -75,7 +79,7 @@ async def Lefts(user, ms: Message):
     db = Connect(userid)
     try:
         role = db.ReadRole()
-        await ms.answer(f"{mention_text} покинул группу. Роль {role}. {Constant.DEAN.admins_us.value}")
+        await ms.answer(f"{mention_text} покинул группу. Роль {role}. {DEAN.admins_us.value}")
         db.DelRole()
     finally:
         del db

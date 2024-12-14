@@ -7,3 +7,4 @@ class DEAN(Enum):
     admins_us = "@impalapie67 @sammylwm"
 
 MY_ID = 2098644058
+CHAT_ID = -1002260554438
