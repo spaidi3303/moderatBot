@@ -21,13 +21,7 @@ async def KickUser(ms: Message):
         db = Connect(userid)
         user = db.IfUser()
         del db
-        if user:
-            db = Connect(userid)
-            role = db.ReadRole()
-            await ms.answer(f"Роль Пользователя: {role}")
-            db.DelRole()
-            del db
-
+        
     except Exception as e:
         logging.error(f"Ошибка: {e}")
         await ms.reply(f"Произошла ошибка KickUser: {e}")
