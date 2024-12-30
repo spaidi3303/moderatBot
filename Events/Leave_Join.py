@@ -3,7 +3,7 @@ import logging
 from aiogram import Router, F
 from aiogram.types import Message
 
-from Constant import MY_ID, DEAN
+from Constant import MY_ID, admins_us
 from I_AM_GOD import I_AM_GOD
 from Database import Connect
 
@@ -17,8 +17,7 @@ async def Saluts(user):
         mention_text = f"<a href='tg://user?id={user.id}'>{user.full_name}</a>"
     text = (f"{mention_text}, Добро пожаловать. Ответьте на вопросы:\n"
             f"➳ Когда у тебя день рождения\n➳ Чем любишь заниматься\n"
-            f"➳ Любимый фильм/сериал\n➳ Что любишь, а что ненавидешь\n"
-            f"{DEAN.admins_us.value}")
+            f"➳ Любимый фильм/сериал\n➳ Что любишь, а что ненавидешь\n")
 
     return text
 
@@ -36,7 +35,9 @@ async def JoinUser(ms: Message):
 
             else:
                 text = await Saluts(new_member)
+                text+=f"{admins_us[ms.chat.id]}"
                 await ms.answer(text)
+
 
     except Exception as e:
         logging.error(f"Ошибка: {e}")
@@ -66,20 +67,20 @@ async def Lefts(user, ms: Message):
     else:
         mention_text = f"<a href='tg://user?id={user.id}'>{user.full_name}</a>"
 
-    db = Connect(userid)
+    db = Connect(userid, ms.chat.id)
     try:
         user = db.IfUser()
         if not user:
             await ms.answer(
-                f"{mention_text} покинул группу. Но его не было в базе данных. {DEAN.admins_us.value}")
+                f"{mention_text} покинул группу. Но его не было в базе данных. {admins_us[ms.chat.id]}")
             return
     finally:
         del db
 
-    db = Connect(userid)
+    db = Connect(userid, ms.chat.id)
     try:
         role = db.ReadRole()
-        await ms.answer(f"{mention_text} покинул группу. Роль {role}. {DEAN.admins_us.value}")
+        await ms.answer(f"{mention_text} покинул группу. Роль {role}. {admins_us[ms.chat.id]}")
         db.DelRole()
     finally:
         del db

@@ -12,7 +12,7 @@ from Database import Connect
 router = Router()
 
 @router.message(F.text.lower().startswith("мут"),
-                F.from_user.id.in_(Constant.DEAN.admins.value),
+                F.from_user.id.in_(Constant.admins),
                 F.reply_to_message.from_user,)
 async def Mut(ms: Message):
     try:
@@ -59,7 +59,7 @@ async def Mut(ms: Message):
 
         username = await give_username(ms)
 
-        db = Connect(userid)
+        db = Connect(userid, ms.chat.id)
         res = db.IfUser()
         del db
         if res is None:
@@ -72,7 +72,7 @@ async def Mut(ms: Message):
 
             await asyncio.sleep(minute * 60)
 
-            db = Connect(userid)
+            db = Connect(userid, ms.chat.id)
             role = db.ReadRole()
             del db
 
@@ -85,7 +85,7 @@ async def Mut(ms: Message):
         await ms.reply(f"Произошла ошибка Mut: {e}")
         
 @router.message(F.text.lower().startswith("анмут"),
-                F.from_user.id.in_(Constant.DEAN.admins.value),)
+                F.from_user.id.in_(Constant.admins),)
 async def UnMut(ms: Message):
     try:
         if ms.reply_to_message:
@@ -109,7 +109,7 @@ async def UnMut(ms: Message):
             )
         )
 
-        db = Connect(userid)
+        db = Connect(userid, ms.chat.id)
         user = db.IfUser()
         del db
 
@@ -120,7 +120,7 @@ async def UnMut(ms: Message):
             await ms.answer(
                 f"с пользователя {username} был снять мут, и впредь следите за своим языком!")
 
-            db = Connect(ms.reply_to_message.from_user.id)
+            db = Connect(ms.reply_to_message.from_user.id, ms.chat.id)
             try:
                 role = db.ReadRole()
             finally:

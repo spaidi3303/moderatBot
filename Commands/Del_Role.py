@@ -2,14 +2,14 @@ import logging
 from aiogram import Router, F
 from aiogram.types import Message
 import Constant
-from Commands.GiveUsername import user_name, give_username
+from Commands.GiveUsername import give_username
 from Database import Connect
 
 router = Router()
 
 
 @router.message(F.text.lower().startswith("снять админку"),
-                F.from_user.id.in_(Constant.DEAN.admins.value),
+                F.from_user.id.in_(Constant.admins),
                 F.reply_to_message.from_user,)
 async def DelRole(ms: Message):
     try:
@@ -17,7 +17,7 @@ async def DelRole(ms: Message):
         userid = ms.reply_to_message.from_user.id
         username = await give_username(ms)
         await promote_un_admin(ms, userid)
-        db = Connect(userid)
+        db = Connect(userid, ms.chat.id)
         if db.IfUser() is None:
             await ms.answer(
                 f'Пользователя нету в базе данных ')
@@ -56,10 +56,10 @@ async def promote_un_admin(ms: Message, userid):
         can_manage_topics=False,
     )
 
-@router.message(F.text.lower().startswith("удалить роль"), F.from_user.id.in_(Constant.DEAN.admins.value))
+@router.message(F.text.lower().startswith("удалить роль"), F.from_user.id.in_(Constant.admins))
 async def DelROleRole(ms: Message):
     try:
-        db = Connect(1)
+        db = Connect(1, ms.chat.id)
         role = ms.text[13:]
         db.DelRoleRole(role)
         await ms.answer("Роль была успешно удалена!")

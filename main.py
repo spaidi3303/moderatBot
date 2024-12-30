@@ -7,7 +7,7 @@ from all_routers import router
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums.parse_mode import ParseMode
 from aiogram.types import Message
-from Constant import TOKEN, MY_ID, CHAT_ID
+from Constant import TOKEN
 bot = Bot(token=TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
 
 dp = Dispatcher()

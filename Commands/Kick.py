@@ -8,7 +8,7 @@ from Database import Connect
 router = Router()
 
 @router.message(F.text.lower().startswith("кик"),
-                F.from_user.id.in_(Constant.DEAN.admins.value),)
+                F.from_user.id.in_(Constant.admins),)
 async def KickUser(ms: Message):
     try:
         if ms.reply_to_message:
@@ -18,7 +18,7 @@ async def KickUser(ms: Message):
             userid = await user_name(ms, username)
 
         await ms.chat.ban(userid)
-        db = Connect(userid)
+        db = Connect(userid, ms.chat.id)
         user = db.IfUser()
         del db
         

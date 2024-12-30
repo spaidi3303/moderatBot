@@ -8,7 +8,7 @@ from Database import Connect
 router = Router()
 
 @router.message(F.text.lower().startswith("дать пред"),
-                F.from_user.id.in_(Constant.DEAN.admins.value),)
+                F.from_user.id.in_(Constant.admins),)
 async def give_pred(ms: Message):
     try:
         if ms.reply_to_message:
@@ -18,14 +18,14 @@ async def give_pred(ms: Message):
             username = ms.text.split()[-1]
             userid = await user_name(ms, username)
 
-        db = Connect(userid)
+        db = Connect(userid, ms.chat.id)
         user = db.IfUser()
         del db
         if not user:
             await ms.answer(
                 f'Пользователя нету в базе данных ')
             return
-        db = Connect(userid)
+        db = Connect(userid, ms.chat.id)
         count = int(db.ReadCountPreds())
         db.AddPred(count + 1)
         await ms.answer(
@@ -43,7 +43,7 @@ async def give_pred(ms: Message):
         await ms.reply(f"Произошла ошибка give_pred: {e}")
 
 @router.message(F.text.lower().startswith("снять пред"),
-                F.from_user.id.in_(Constant.DEAN.admins.value),)
+                F.from_user.id.in_(Constant.admins),)
 async def DelOnePred(ms: Message):
     try:
         if ms.reply_to_message:
@@ -52,7 +52,7 @@ async def DelOnePred(ms: Message):
         else:
             username = ms.text.split()[-1]
             userid = await user_name(ms, username)
-        db = Connect(userid)
+        db = Connect(userid, ms.chat.id)
         user = db.IfUser()
         del db
 
@@ -61,7 +61,7 @@ async def DelOnePred(ms: Message):
                 f'Пользователя нету в базе данных ')
             return
 
-        db = Connect(userid)
+        db = Connect(userid, ms.chat.id)
         count = int(db.ReadCountPreds())
         if count == 0:
             await ms.answer("У пользователя нет предов")
@@ -75,7 +75,7 @@ async def DelOnePred(ms: Message):
         await ms.reply(f"Произошла ошибка DelOnePred: {e}")
 
 @router.message(F.text.lower().startswith("посмотреть преды"),
-                F.from_user.id.in_(Constant.DEAN.admins.value),)
+                F.from_user.id.in_(Constant.admins),)
 async def ReadPredsUser(ms: Message):
     try:
         if ms.reply_to_message:
@@ -84,7 +84,7 @@ async def ReadPredsUser(ms: Message):
         else:
             username = ms.text.split()[-1]
             userid = await user_name(ms, username)
-        db = Connect(userid)
+        db = Connect(userid, ms.chat.id)
         user = db.IfUser()
         del db
 
@@ -93,8 +93,9 @@ async def ReadPredsUser(ms: Message):
                 f'Пользователя нету в базе данных ')
             return
 
-        db = Connect(userid)
+        db = Connect(userid, ms.chat.id)
         count = int(db.ReadCountPreds())
+        print(count)
         if count is None:
             count = 0
         if count == 0:

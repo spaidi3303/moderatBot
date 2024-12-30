@@ -7,11 +7,11 @@ from Database import Connect
 router = Router()
 
 @router.message(F.text.lower() == "список участников",
-                F.from_user.id.in_(Constant.DEAN.admins.value),)
+                F.from_user.id.in_(Constant.admins),)
 async def ListMembers(ms: Message):
     try:
 
-        db = Connect(1)
+        db = Connect(1, ms.chat.id)
         array = {}
         res = db.ReadAllId()
         ids = []
@@ -21,7 +21,7 @@ async def ListMembers(ms: Message):
 
         for userid in ids:
             username = await read_username_id(ms, userid)
-            db = Connect(userid)
+            db = Connect(userid, ms.chat.id)
             try:
                 role = db.ReadRole()
                 array[username] = role
