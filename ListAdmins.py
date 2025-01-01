@@ -19,7 +19,7 @@ async def GiveAdmins(ms: Message):
                 db = Connect(userid, ms.chat.id)
                 try:
                     db.AddUser(role)
-
+                    await ms.answer(f"роль {role} была успешно добавлена")
                 finally:
                     del db
 
