@@ -9,45 +9,34 @@ router = Router()
 @router.message(F.text.lower() == "список участников",
                 F.from_user.id.in_(Constant.admins),)
 async def ListMembers(ms: Message):
-    try:
+    db = Connect(1, ms.chat.id)
+    array = {}
+    res = db.ReadAllId()
+    ids = []
+    for Array in res:
+        ids.append(Array["userid"])
+    del db
 
-        db = Connect(1, ms.chat.id)
-        array = {}
-        res = db.ReadAllId()
-        ids = []
-        for Array in res:
-            ids.append(Array["userid"])
-        del db
+    for userid in ids:
+        username = await read_username_id(ms, userid)
+        db = Connect(userid, ms.chat.id)
+        try:
+            role = db.ReadRole()
+            array[username] = role
+        finally:
+            del db
+    text = ''
+    num = 1
+    for i, j in array.items():
+        text += f"{num}. {i} : {j}\n"
+        num += 1
 
-        for userid in ids:
-            username = await read_username_id(ms, userid)
-            db = Connect(userid, ms.chat.id)
-            try:
-                role = db.ReadRole()
-                array[username] = role
-            finally:
-                del db
-        text = ''
-        num = 1
-        for i, j in array.items():
-            text += f"{num}. {i} : {j}\n"
-            num += 1
-
-        await ms.answer(text)
-
-    except Exception as e:
-        logging.error(f"Ошибка: {e}")
-        await ms.reply(f"Произошла ошибка ListMembers: {e}")
+    await ms.answer(text)
 
 async def read_username_id(ms: Message, userid):
-    try:
         res = await ms.chat.get_member(userid)
         if res.user.username:
             username = '@' + f"{res.user.username}"
         else:
             username = f"<a href='tg://user?id={userid}'>{res.user.full_name}</a>"
         return username
-
-    except Exception as e:
-        logging.error(f"Ошибка read_username_id: {e}")
-        await ms.reply(f"Произошла read_username_id: {e}")

@@ -4,7 +4,7 @@ import Constant
 
 host = "193.200.74.36"
 user = "sammy"
-database = "bunker"
+database = "rk"
 password = "Yasenok202"
 
 class Connect:
@@ -20,15 +20,12 @@ class Connect:
         self.table_name = Constant.rk[chatid]
         self.userid = userid
         self.cursor = self.conn.cursor()
-        self.cursor.execute("SHOW TABLES LIKE %s", (self.table_name,))
-        result = self.cursor.fetchone()
-        if result is None:
-            self.cursor.execute(f'''CREATE TABLE IF NOT EXISTS {self.table_name} (
-                                                   id INT AUTO_INCREMENT PRIMARY KEY,
-                                                   userid TEXT,
-                                                   role TEXT,
-                                                   count_preds TEXT
-                                                   )''')
+        self.cursor.execute(f'''CREATE TABLE IF NOT EXISTS {self.table_name} (
+                                                id INT AUTO_INCREMENT PRIMARY KEY,
+                                                userid TEXT,
+                                                role TEXT,
+                                                count_preds TEXT
+                                                )''')
 
     def __del__(self):
         self.conn.close()
