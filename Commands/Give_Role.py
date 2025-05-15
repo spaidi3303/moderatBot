@@ -58,11 +58,7 @@ async def promote_admin(ms: Message, userid):
         can_manage_topics=False,
     )
 
-
-
-
 async def to_fancy_text(text: str, chatid):
-
     normal_lower = "abcdefghijklmnopqrstuvwxyz"
     normal_upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     result = ""

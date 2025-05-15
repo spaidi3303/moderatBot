@@ -1,5 +1,12 @@
+import os
+from dotenv import load_dotenv
+load_dotenv("secrets.env")
+TOKEN = os.getenv("token")
 
-TOKEN =  "7946923092:AAFa1ARaiUIQ1B9V5lqshOiOCGDeoU8s5vg"
+host = os.getenv('host')
+user = os.getenv('user')
+database = os.getenv('database')
+password = os.getenv('password')
 
 rk = {
     -1002260554438: "bunker_rk",

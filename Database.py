@@ -1,11 +1,7 @@
 import pymysql
+from Constant import *
 
-import Constant
 
-host = "193.200.74.36"
-user = "sammy"
-database = "rk"
-password = "Yasenok202"
 
 class Connect:
     def __init__(self, userid, chatid):
@@ -17,7 +13,7 @@ class Connect:
             database=database,
             cursorclass=pymysql.cursors.DictCursor
         )
-        self.table_name = Constant.rk[chatid]
+        self.table_name = rk[chatid]
         self.userid = userid
         self.cursor = self.conn.cursor()
         self.cursor.execute(f'''CREATE TABLE IF NOT EXISTS {self.table_name} (
