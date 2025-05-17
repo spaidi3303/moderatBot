@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
 load_dotenv("secrets.env")
-TOKEN = os.getenv("token")
+TOKEN =os.getenv("TOKEN")
 
 host = os.getenv('host')
 user = os.getenv('user')
